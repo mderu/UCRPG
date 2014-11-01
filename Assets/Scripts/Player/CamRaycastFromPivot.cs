@@ -21,14 +21,36 @@ public class CamRaycastFromPivot : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		transform.parent.position = follow.position + initPos;
-		RaycastHit hit;
-
+		RaycastHit hit, smallestHit;
+		Physics.Raycast (transform.parent.position + transform.rotation * (Vector3.down * .5f), transform.rotation * (-Vector3.forward), out smallestHit, distance, ~Layers.Player);
+		if (smallestHit.distance > 1f) {
+			Debug.Log("Hit Down");
+		}
+		if (Physics.Raycast (transform.parent.position + transform.rotation * (Vector3.right * .5f), transform.rotation * (-Vector3.forward), out hit, distance, ~Layers.Player)) {
+			Debug.Log ("Hit Right");
+			if(hit.distance < smallestHit.distance){
+				smallestHit = hit;
+			}
+		}
+		if (Physics.Raycast (transform.parent.position + transform.rotation * (Vector3.left * .5f), transform.rotation * (-Vector3.forward), out hit, distance, ~Layers.Player)) {
+			Debug.Log ("Hit Left");
+			if(hit.distance < smallestHit.distance){
+				smallestHit = hit;
+			}
+		}
+		if (Physics.Raycast (transform.parent.position + transform.rotation * (Vector3.up * .5f), transform.rotation * (-Vector3.forward), out hit, distance, ~Layers.Player)) {
+			Debug.Log ("Hit Up");
+			if(hit.distance < smallestHit.distance){
+				smallestHit = hit;
+			}
+		}
 		//If the Raycast hits a target, move the camera to that point, so it doesn't pass through, else, keep the same distance.
-		if (Physics.Raycast(transform.parent.position, transform.rotation * (-Vector3.forward), out hit, distance, ~Layers.Player)) {
-			transform.localPosition = (-Vector3.forward).normalized * hit.distance;
+		if (smallestHit.distance > minCamDist) {
+			transform.localPosition = (-Vector3.forward).normalized * smallestHit.distance;
 		}else{
 			transform.localPosition = (-Vector3.forward) * distance;
 		}
+
 		if (Input.GetMouseButtonUp(0)) {
 			Screen.lockCursor = !Screen.lockCursor;
 		}

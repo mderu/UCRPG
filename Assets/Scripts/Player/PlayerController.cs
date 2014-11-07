@@ -35,6 +35,7 @@ public class PlayerController : MonoBehaviour {
 	}
 	void addHighLight(GameObject target, bool isEnemy){
 		Renderer[] rends = target.GetComponents<Renderer> ();
+		highlight.transform.localScale = target.transform.lossyScale;
 		for (int i = 0; i < rends.Length; i++) {
 			//Copys the component, and then gets the list of materials.
 			if(rends[i] is SkinnedMeshRenderer){
@@ -84,6 +85,7 @@ public class PlayerController : MonoBehaviour {
 		if (highlight.GetComponent<MeshFilter>()) {
 			Destroy (highlight.GetComponent<MeshFilter>());
 		}
+		transform.localScale = Vector3.one;
 	}
 
 	RaycastHit CamRayHit(float raycastRange = 50f, int ignoreList = (~Layers.Environment & ~Layers.Player)){

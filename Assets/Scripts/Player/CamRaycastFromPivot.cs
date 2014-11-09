@@ -50,8 +50,8 @@ public class CamRaycastFromPivot : MonoBehaviour {
 		}
 
 		//Allow the player to scroll to zoom
-		if ((minCamDist < distance && -Input.mouseScrollDelta.y < 0) || (distance < maxCamDist && -Input.mouseScrollDelta.y > 0)) {
-			distance += -Input.mouseScrollDelta.y * .25f;
+		if ((minCamDist < distance && -Input.GetAxis("Mouse ScrollWheel") < 0) || (distance < maxCamDist && -Input.GetAxis("Mouse ScrollWheel") > 0)) {
+			distance += -Input.GetAxis("Mouse ScrollWheel") * .25f;
 		}
 
 		//Rotate camera based off of mouse movement

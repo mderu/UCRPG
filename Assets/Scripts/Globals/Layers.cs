@@ -19,5 +19,5 @@ public static class Layers {
 	public const int Characters    = 1 << 9;
 	public const int Environment   = 1 << 10;
 	public const int Player        = 1 << 11;
-	public const int Building      = 1 << 12;
+	public const int Enemies       = 1 << 12;
 }

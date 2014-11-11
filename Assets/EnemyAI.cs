@@ -4,7 +4,7 @@ using System.Collections;
 public class EnemyAI : MonoBehaviour {
 
 	float speed = .0f;
-	int health = 1000;
+	public int health = 1000;
 	int nextWaypoint = 0;
 
 	public Transform waypoints;

@@ -101,16 +101,16 @@ Material:
         second: .222331852
       data:
         first:
+          name: _InvFade
+        second: 2.41267848
+      data:
+        first:
           name: _FresnelScale
         second: .75
       data:
         first:
           name: _GerstnerIntensity
         second: 1
-      data:
-        first:
-          name: _InvFade
-        second: 2.41267848
       data:
         first:
           name: _Outline
@@ -135,7 +135,7 @@ Material:
       data:
         first:
           name: _Color
-        second: {r: 0, g: 0, b: 0, a: .65882355}
+        second: {r: .125, g: .125, b: .125, a: .843137264}
       data:
         first:
           name: _Emission
@@ -148,6 +148,14 @@ Material:
         first:
           name: _Tint
         second: {r: .5, g: .5, b: .5, a: .5}
+      data:
+        first:
+          name: _TintColor
+        second: {r: 0, g: 0, b: 0, a: .501960814}
+      data:
+        first:
+          name: _EmisColor
+        second: {r: .200000003, g: .200000003, b: .200000003, a: 0}
       data:
         first:
           name: _DistortParams
@@ -212,14 +220,6 @@ Material:
         first:
           name: _GDirectionCD
         second: {r: .100000001, g: .899999976, b: .5, a: .5}
-      data:
-        first:
-          name: _TintColor
-        second: {r: 0, g: 0, b: 0, a: .501960814}
-      data:
-        first:
-          name: _EmisColor
-        second: {r: .200000003, g: .200000003, b: .200000003, a: 0}
       data:
         first:
           name: _OutlineColor

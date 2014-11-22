@@ -88,10 +88,10 @@ public class PlayerController : MonoBehaviour {
 		transform.localScale = Vector3.one;
 	}
 
-	RaycastHit CamRayHit(float raycastRange = 50f, int ignoreList = (~Layers.Environment & ~Layers.Player)){
+	RaycastHit CamRayHit(float raycastRange = 50f, int layers = Layers.Glowable){
 		RaycastHit camRayHit;
 		Transform camera = transform.parent.GetChild(1).GetChild(0);
-		Physics.Raycast (camera.position, camera.rotation * (Vector3.forward), out camRayHit, raycastRange, ignoreList);
+		Physics.Raycast (camera.position, camera.rotation * (Vector3.forward), out camRayHit, raycastRange, layers);
 		return camRayHit;
 	}
 }

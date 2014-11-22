@@ -22,18 +22,18 @@ public class CamRaycastFromPivot : MonoBehaviour {
 	void Update () {
 		transform.parent.position = follow.position + initPos;
 		RaycastHit hit, smallestHit;
-		Physics.Raycast (transform.parent.position + transform.rotation * (Vector3.down * .5f), transform.rotation * (-Vector3.forward), out smallestHit, distance, ~Layers.Player);
-		if (Physics.Raycast (transform.parent.position + transform.rotation * (Vector3.right * .5f), transform.rotation * (-Vector3.forward), out hit, distance, ~Layers.Player)) {
+		Physics.Raycast (transform.parent.position + transform.rotation * (Vector3.down * .5f), transform.rotation * (-Vector3.forward), out smallestHit, distance, Layers.Player);
+		if (Physics.Raycast (transform.parent.position + transform.rotation * (Vector3.right * .5f), transform.rotation * (-Vector3.forward), out hit, distance, Layers.Player)) {
 			if(hit.distance < smallestHit.distance){
 				smallestHit = hit;
 			}
 		}
-		if (Physics.Raycast (transform.parent.position + transform.rotation * (Vector3.left * .5f), transform.rotation * (-Vector3.forward), out hit, distance, ~Layers.Player)) {
+		if (Physics.Raycast (transform.parent.position + transform.rotation * (Vector3.left * .5f), transform.rotation * (-Vector3.forward), out hit, distance, Layers.Player)) {
 			if(hit.distance < smallestHit.distance){
 				smallestHit = hit;
 			}
 		}
-		if (Physics.Raycast (transform.parent.position + transform.rotation * (Vector3.up * .5f), transform.rotation * (-Vector3.forward), out hit, distance, ~Layers.Player)) {
+		if (Physics.Raycast (transform.parent.position + transform.rotation * (Vector3.up * .5f), transform.rotation * (-Vector3.forward), out hit, distance, Layers.Player)) {
 			if(hit.distance < smallestHit.distance){
 				smallestHit = hit;
 			}

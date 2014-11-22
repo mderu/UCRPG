@@ -3,8 +3,11 @@ using System.Collections;
 
 public class BulletMovement : MonoBehaviour {
 
-	float speed = 30f;
-	float yAngle;
+    float initSpeed = 25f;
+	float speed = 25f;
+    float accel = 0f;
+    float zRot = 0;
+
 	int damage = 3;
 	int targetLayer = Layers.Enemies;
 	Vector3 initPos;
@@ -19,7 +22,8 @@ public class BulletMovement : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		initPos = transform.position;
-		calculateTrajectory ();
+		calculateTrajectory (speed, speed*speed);
+        zRot = Random.value;
 	}
 
 	void calculateTrajectory(){
@@ -59,18 +63,26 @@ public class BulletMovement : MonoBehaviour {
 		if (float.IsNaN (yAngle)) {yAngle = 45f;}
 		if (float.IsNaN (xAngle)) {xAngle = 0;}
 		rigidbody.velocity = Quaternion.Euler (-yAngle, xAngle, zAngle) * Vector3.forward * iSpeed;
-		
 		lastTargPos = target.position;
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
 		Vector3 direction = target.position - transform.position;
-		transform.rotation = Quaternion.LookRotation (rigidbody.velocity);
-
-		if (followTarget) {
-			calculateTrajectory (rigidbody.velocity.magnitude, rigidbody.velocity.sqrMagnitude);
-		}
+        Vector3 toInit = transform.position - initPos;
+        //transform.localScale = transform.localScale.normalized * (5 * Mathf.Min(direction.magnitude / toInit.magnitude, toInit.magnitude / direction.magnitude));
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            transform.GetChild(i).localPosition = transform.GetChild(i).localPosition.normalized * (3 * Mathf.Max(.01f, Mathf.Min(direction.magnitude / toInit.magnitude, toInit.magnitude / direction.magnitude)));
+        }
+        transform.rotation = Quaternion.LookRotation(rigidbody.velocity) * Quaternion.Euler(0, 0, zRot);
+        zRot += 7.5f + accel;
+        if (followTarget)
+        {
+            calculateTrajectory(speed, speed*speed);
+            accel += .01f;
+            speed += accel;
+        }
 			//if (followTarget) {transform.position += (target.position - lastTargPos);lastTargPos = target.position;}
 
 		RaycastHit rch;
@@ -83,12 +95,13 @@ public class BulletMovement : MonoBehaviour {
 			}
 			killBullet();
 		}
-		if (Physics.Raycast (transform.position, rigidbody.velocity, out rch, rigidbody.velocity.magnitude*Time.fixedDeltaTime, ~targetLayer)){
+		else if (Physics.Raycast (transform.position, rigidbody.velocity, out rch, rigidbody.velocity.magnitude*Time.fixedDeltaTime, ~targetLayer)){
 			killBullet();
 		}
 		
 		speedTimesFrames += speed * Time.fixedDeltaTime;
-		if(speedTimesFrames > 200){
+		if(speedTimesFrames > 2000){
+            Debug.Log("Removed due to distance");
 			killBullet();
 		}
 	}
@@ -98,11 +111,12 @@ public class BulletMovement : MonoBehaviour {
 		speedTimesFrames = 0;
 		transform.position = initPos;
 		rigidbody.velocity = Vector3.zero;
-		calculateTrajectory();
+        speed = initSpeed;
+        accel = 0f;
+		calculateTrajectory(speed, speed*speed);
 	}
 
-	void OnTriggerEnter(Collider other)
-	{
+	void OnTriggerEnter(Collider other){
 		if ( (other.gameObject.layer & targetLayer) != 0) {
 			other.transform.GetComponent<EnemyAI>().TakeDamage(3);
 		}

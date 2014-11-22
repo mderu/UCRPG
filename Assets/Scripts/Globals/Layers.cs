@@ -13,11 +13,14 @@ public static class Layers {
 
 	public const int Water         = 1 << 4;
 	public const int UI            = 1 << 5;
-
 	
+
 	public const int Vehicles      = 1 << 8;
 	public const int Characters    = 1 << 9;
 	public const int Environment   = 1 << 10;
 	public const int Player        = 1 << 11;
 	public const int Enemies       = 1 << 12;
+	public const int PlayerBounds  = 1 << 13;
+
+    public const int Glowable = (Enemies);
 }

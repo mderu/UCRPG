@@ -6,87 +6,175 @@ public class PlayerController : MonoBehaviour {
 
 	// Use this for initialization
 
-	GameObject lockedOnTarget;
-	GameObject highlight;
+    public GameObject lockedOnTarget;
+	public GameObject lookingAtTarget;
+    public List<GameObject> lockedOnHL = new List<GameObject>();
+	public List<GameObject> lookingAtHL = new List<GameObject>();
 
 	void Start () {
 		Materials.Initialize();
-		highlight = new GameObject("Highlight");
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		HighlightTarget ();
+        HighlightTarget();
+        highlightFollowTarget();
 	}
 
 	void HighlightTarget(){
 		RaycastHit target = CamRayHit();
-		if (target.collider == null) {
-			remHighLights();
-			lockedOnTarget = null;
-		}else if (lockedOnTarget == null) {
+        if (target.collider == null)
+        {
+            ClearLookingAt();
+            lookingAtTarget = null;
+        }
+        else
+        {
 			if(target.distance > 1f){
 				Debug.Log ("Looking at " + target.collider.name);
-				lockedOnTarget = target.collider.gameObject;
-				addHighLight(target.collider.gameObject, true);
+                if (Input.GetMouseButtonDown(1))
+                {
+                    lockedOnTarget = lookingAtTarget;
+                    setHighLight(target.collider.gameObject, true);
+                }
+                else
+                {
+                    if (lookingAtTarget != target.collider.gameObject)
+                    {
+                        lookingAtTarget = target.collider.gameObject;
+                        setHighLight(target.collider.gameObject, false);
+                    }
+                }
 			}
 		}
-		highlightFollowTarget ();
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            lockedOnTarget = null;
+            ClearLockOn();
+        }
 	}
-	void addHighLight(GameObject target, bool isEnemy){
-		Renderer[] rends = target.GetComponents<Renderer> ();
-		highlight.transform.localScale = target.transform.lossyScale;
-		for (int i = 0; i < rends.Length; i++) {
-			//Copys the component, and then gets the list of materials.
-			if(rends[i] is SkinnedMeshRenderer){
-				Utilities.CopyComponent((SkinnedMeshRenderer)rends[i], highlight);
-				((SkinnedMeshRenderer)highlight.renderer).sharedMesh = target.GetComponent<SkinnedMeshRenderer>().sharedMesh;
-				((SkinnedMeshRenderer)highlight.renderer).bones = target.GetComponent<SkinnedMeshRenderer>().bones;
+    void setHighLight(GameObject target, bool lockedOn)
+    {
+        List<GameObject> objHighlights = new List<GameObject>();
+        Material hlColor;
+        Debug.Log("Layer: " + target.layer);
+        Debug.Log("Layers.Enemies: " + Layers.Enemies);
+        if ((1 << target.layer == Layers.Enemies)){
+            if (lockedOn){
+                hlColor = Materials.OutlineEnemyLock;
+            }else{
+                hlColor = Materials.OutlineEnemy;
+                }
+        }
+        else if (target.layer == Layers.Glowable){
+            hlColor = Materials.OutlineAlly;
+        }
+        else { hlColor = Materials.OutlineTarget; }
+        _setHighLight(target, objHighlights, hlColor);
+        if (lockedOn) {
+            ClearLockOn();
+            lockedOnHL = objHighlights; 
+        }
+        else 
+        {
+            ClearLookingAt();
+            lookingAtHL = objHighlights; 
+        }
+    }
+	void _setHighLight(GameObject target, List<GameObject> objHighlights, Material hlColor)
+    {
+		Renderer rend = target.GetComponent<Renderer> ();
+        if (rend)
+        {
+            GameObject highlight = new GameObject("Highlight");
+            highlight.transform.localScale = target.transform.lossyScale;
 
-			}else{
-				Utilities.CopyComponent(rends[i], highlight);
-				Utilities.CopyComponent(target.GetComponent<MeshFilter>(), highlight);
-				highlight.GetComponent<MeshFilter>().mesh = target.GetComponent<MeshFilter>().mesh;
-			}
-			Material[] mats = new Material[rends[i].materials.Length];
-			for(int j = 0; j < rends[i].materials.Length; j++){
-				mats[j] = isEnemy ? Materials.OutlineEnemy : Materials.OutlineTarget;
-			}
-			highlight.renderer.materials = mats;
+            //Copys the component, and then gets the list of materials.
+            if (rend is SkinnedMeshRenderer)
+            {
+                Utilities.CopyComponent((SkinnedMeshRenderer)rend, highlight);
+                ((SkinnedMeshRenderer)highlight.renderer).sharedMesh = target.GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                ((SkinnedMeshRenderer)highlight.renderer).bones = target.GetComponent<SkinnedMeshRenderer>().bones;
+            }
+            else
+            {
+                Utilities.CopyComponent(rend, highlight);
+                Utilities.CopyComponent(target.GetComponent<MeshFilter>(), highlight);
+                highlight.GetComponent<MeshFilter>().mesh = target.GetComponent<MeshFilter>().mesh;
+            }
+            Material[] mats = new Material[rend.materials.Length];
+            for (int j = 0; j < rend.materials.Length; j++)
+            {
+                mats[j] = hlColor;
+            }
+            highlight.renderer.materials = mats;
 
-			//If we want the entire object light up, we'll make highlight an array of highlights,
-			//But for now 1 is probably okay.
-			break;
-		}
+            objHighlights.Add(highlight);
+            Debug.Log(objHighlights);
+        }
 
-		//Uncommenting will recursively find a child to highlight
-		if (rends.Length == 0) {
+		//Recursively find a child to highlight
+        if (target.transform.childCount > 0)
+        {
 			for (int i = 0; i < target.transform.childCount; i++) {
-				if(highlight.GetComponents<Renderer>().Length == 0){
-					addHighLight(target.transform.GetChild(i).gameObject, isEnemy);
-				}else{
-					break;
-				}
+                _setHighLight(target.transform.GetChild(i).gameObject, objHighlights, hlColor);
 			}
 		}
-
 	}
+
+    //TODO: Make it so child objects follow movement as well.
 	void highlightFollowTarget(){
-		if (lockedOnTarget != null) {
-			highlight.transform.position = lockedOnTarget.transform.position;
-			highlight.transform.rotation = lockedOnTarget.transform.rotation;
+		if (lockedOnTarget != null)
+        {
+            Debug.Log("Following Locked On");
+            _followTarget(lockedOnTarget, lockedOnHL, 0);
 		}
+        if (lookingAtTarget != null)
+        {
+            Debug.Log("Following Looked At");
+            _followTarget(lookingAtTarget, lookingAtHL, 0);
+        }
 	}
 
-	void remHighLights(){
-		if (highlight.renderer != null) {
-			Destroy (highlight.renderer);
+    void _followTarget(GameObject target, List<GameObject> list, int index)
+    {
+        Debug.Log(index);
+        if (!target.transform.renderer) { return; }
+        list[index].transform.position = target.transform.position;
+        list[index].transform.rotation = target.transform.rotation;
+        list[index].transform.localScale = target.transform.lossyScale;
+        if (target.transform.childCount > 0)
+        {
+			for (int i = 0; i < target.transform.childCount; i++)
+            {
+                index += 1;
+                _followTarget(target.transform.GetChild(i).gameObject, list, index);
+            }
 		}
-		if (highlight.GetComponent<MeshFilter>()) {
-			Destroy (highlight.GetComponent<MeshFilter>());
-		}
-		transform.localScale = Vector3.one;
+    }
+
+	void ClearLockOn(){
+        if (lockedOnHL.Count > 0)
+        {
+            for (int i = 0; i < lockedOnHL.Count; i++)
+            {
+                Destroy(lockedOnHL[i]);
+            }
+            lockedOnHL.Clear();
+        }
 	}
+
+    void ClearLookingAt()
+    {
+        if (lookingAtHL.Count > 0)
+        {
+            for (int i = 0; i < lookingAtHL.Count; i++)
+            {
+                Destroy(lookingAtHL[i]);
+            }
+            lookingAtHL.Clear();
+        }
+    }
 
 	RaycastHit CamRayHit(float raycastRange = 50f, int layers = Layers.Glowable){
 		RaycastHit camRayHit;

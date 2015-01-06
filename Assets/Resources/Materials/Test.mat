@@ -29,6 +29,20 @@ Material:
           m_Offset: {x: 0, y: 0}
       data:
         first:
+          name: _ShadowTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _ReflectionTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
           name: _FrontTex
         second:
           m_Texture: {fileID: 0}
@@ -71,20 +85,6 @@ Material:
           m_Offset: {x: 0, y: 0}
       data:
         first:
-          name: _ReflectionTex
-        second:
-          m_Texture: {fileID: 0}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _ShadowTex
-        second:
-          m_Texture: {fileID: 0}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
           name: _FalloffTex
         second:
           m_Texture: {fileID: 0}
@@ -101,24 +101,8 @@ Material:
         second: .222331852
       data:
         first:
-          name: _InvFade
-        second: 2.41267848
-      data:
-        first:
-          name: _FresnelScale
-        second: .75
-      data:
-        first:
-          name: _GerstnerIntensity
+          name: _SquashAmount
         second: 1
-      data:
-        first:
-          name: _Outline
-        second: .00499999989
-      data:
-        first:
-          name: _ShadowIntensity
-        second: .600000024
       data:
         first:
           name: _TranslucencyViewDependency
@@ -129,8 +113,24 @@ Material:
         second: 0
       data:
         first:
-          name: _SquashAmount
+          name: _FresnelScale
+        second: .75
+      data:
+        first:
+          name: _GerstnerIntensity
         second: 1
+      data:
+        first:
+          name: _InvFade
+        second: 2.41267848
+      data:
+        first:
+          name: _Outline
+        second: .00499999989
+      data:
+        first:
+          name: _ShadowIntensity
+        second: .600000024
     m_Colors:
       data:
         first:
@@ -138,24 +138,20 @@ Material:
         second: {r: .125, g: .125, b: .125, a: .843137264}
       data:
         first:
-          name: _Emission
-        second: {r: 0, g: 0, b: 0, a: 0}
-      data:
-        first:
           name: _SpecColor
         second: {r: .5, g: .5, b: .5, a: 0}
       data:
         first:
-          name: _Tint
-        second: {r: .5, g: .5, b: .5, a: .5}
+          name: _Emission
+        second: {r: 0, g: 0, b: 0, a: 0}
       data:
         first:
-          name: _TintColor
-        second: {r: 0, g: 0, b: 0, a: .501960814}
+          name: _Scale
+        second: {r: 1, g: 1, b: 1, a: 1}
       data:
         first:
-          name: _EmisColor
-        second: {r: .200000003, g: .200000003, b: .200000003, a: 0}
+          name: _TranslucencyColor
+        second: {r: 0, g: 0, b: 0, a: 1}
       data:
         first:
           name: _DistortParams
@@ -222,13 +218,17 @@ Material:
         second: {r: .100000001, g: .899999976, b: .5, a: .5}
       data:
         first:
+          name: _Tint
+        second: {r: .5, g: .5, b: .5, a: .5}
+      data:
+        first:
+          name: _TintColor
+        second: {r: 0, g: 0, b: 0, a: .501960814}
+      data:
+        first:
+          name: _EmisColor
+        second: {r: .200000003, g: .200000003, b: .200000003, a: 0}
+      data:
+        first:
           name: _OutlineColor
         second: {r: 0, g: 0, b: 0, a: 1}
-      data:
-        first:
-          name: _TranslucencyColor
-        second: {r: 0, g: 0, b: 0, a: 1}
-      data:
-        first:
-          name: _Scale
-        second: {r: 1, g: 1, b: 1, a: 1}

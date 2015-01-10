@@ -1351,6 +1351,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &192202
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 492202}
+  m_Layer: 11
+  m_Name: AimHere
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!4 &400000
 Transform:
   m_ObjectHideFlags: 1
@@ -1630,6 +1645,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 400180}
+  - {fileID: 492202}
   m_Father: {fileID: 400066}
   m_RootOrder: 0
 --- !u!4 &400052
@@ -2507,6 +2523,18 @@ Transform:
   - {fileID: 400078}
   m_Father: {fileID: 400162}
   m_RootOrder: 1
+--- !u!4 &492202
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 192202}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.01800001, z: .0649999976}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 400050}
+  m_RootOrder: 1
 --- !u!20 &2000002
 Camera:
   m_ObjectHideFlags: 1
@@ -2624,6 +2652,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 004c23fcbe962644aab57b80619cba76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lockedOnTarget: {fileID: 0}
+  lookingAtTarget: {fileID: 0}
+  lockedOnHL: []
+  lookingAtHL: []
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1

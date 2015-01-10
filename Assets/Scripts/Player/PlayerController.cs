@@ -31,15 +31,19 @@ public class PlayerController : MonoBehaviour {
         else
         {
 			if(target.distance > 1f){
-				Debug.Log ("Looking at " + target.collider.name);
                 if (Input.GetMouseButtonDown(1))
                 {
-                    lockedOnTarget = lookingAtTarget;
+                    lockedOnTarget = target.collider.gameObject;
+                    if (lockedOnTarget == lookingAtTarget)
+                    {
+                        ClearLookingAt();
+                        lookingAtTarget = null;
+                    }
                     setHighLight(target.collider.gameObject, true);
                 }
                 else
                 {
-                    if (lookingAtTarget != target.collider.gameObject)
+                    if (lookingAtTarget != target.collider.gameObject && target.collider.gameObject != lockedOnTarget)
                     {
                         lookingAtTarget = target.collider.gameObject;
                         setHighLight(target.collider.gameObject, false);
@@ -57,19 +61,20 @@ public class PlayerController : MonoBehaviour {
     {
         List<GameObject> objHighlights = new List<GameObject>();
         Material hlColor;
-        Debug.Log("Layer: " + target.layer);
-        Debug.Log("Layers.Enemies: " + Layers.Enemies);
-        if ((1 << target.layer == Layers.Enemies)){
+
+        if ((target.layer == Layers.Enemies)){
             if (lockedOn){
                 hlColor = Materials.OutlineEnemyLock;
             }else{
                 hlColor = Materials.OutlineEnemy;
-                }
-        }
-        else if (target.layer == Layers.Glowable){
+            }
+        }else if (target.layer == Layers.Allies){
             hlColor = Materials.OutlineAlly;
         }
-        else { hlColor = Materials.OutlineTarget; }
+        else {
+            hlColor = Materials.OutlineTarget; 
+        }
+
         _setHighLight(target, objHighlights, hlColor);
         if (lockedOn) {
             ClearLockOn();
@@ -110,7 +115,6 @@ public class PlayerController : MonoBehaviour {
             highlight.renderer.materials = mats;
 
             objHighlights.Add(highlight);
-            Debug.Log(objHighlights);
         }
 
 		//Recursively find a child to highlight
@@ -126,19 +130,16 @@ public class PlayerController : MonoBehaviour {
 	void highlightFollowTarget(){
 		if (lockedOnTarget != null)
         {
-            Debug.Log("Following Locked On");
             _followTarget(lockedOnTarget, lockedOnHL, 0);
 		}
         if (lookingAtTarget != null)
         {
-            Debug.Log("Following Looked At");
             _followTarget(lookingAtTarget, lookingAtHL, 0);
         }
 	}
 
     void _followTarget(GameObject target, List<GameObject> list, int index)
     {
-        Debug.Log(index);
         if (!target.transform.renderer) { return; }
         list[index].transform.position = target.transform.position;
         list[index].transform.rotation = target.transform.rotation;
@@ -176,10 +177,10 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-	RaycastHit CamRayHit(float raycastRange = 50f, int layers = Layers.Glowable){
+	RaycastHit CamRayHit(float raycastRange = 50f, int layerMask = Layers.TargetableMask){
 		RaycastHit camRayHit;
 		Transform camera = transform.parent.GetChild(1).GetChild(0);
-		Physics.Raycast (camera.position, camera.rotation * (Vector3.forward), out camRayHit, raycastRange, layers);
+        Physics.Raycast(camera.position, camera.rotation * (Vector3.forward), out camRayHit, raycastRange, layerMask);
 		return camRayHit;
 	}
 }

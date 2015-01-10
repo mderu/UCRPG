@@ -1,26 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BulletMovement : MonoBehaviour {
+public class Projectile : MonoBehaviour {
 
     float initSpeed = 0;
 	public float speed = 25f;
     public bool highArc = false;
 
     //Change in accleration
-    //A ton of these variables come from UCRPG,
-    //And have been left there. Keeping because
-    //We are going to want this script to 
-    //be modified to work for UCRPG again.
+
     public float jerk = 0;
     float accel = 0f;
+    //Random Z value for speed of rotation of the projectile
     float zRot = 0;
-
-	public bool followTarget = false;
 
 	Vector3 initPos;
 	
 	public Vector3 targetPosition;
+    public GameObject target;
+    public GameObject from;
 
 	Vector3 lastTargPos = Vector3.zero;
 
@@ -87,8 +85,9 @@ public class BulletMovement : MonoBehaviour {
         }
         transform.rotation = Quaternion.LookRotation(rigidbody.velocity) * Quaternion.Euler(0, 0, zRot);
         zRot += 7.5f + accel;
-        if (followTarget)
+        if (target != null)
         {
+            targetPosition = target.transform.position;
             calculateTrajectory(speed, speed*speed);
         }
 		
@@ -98,20 +97,21 @@ public class BulletMovement : MonoBehaviour {
 		}
 	}
 
-	//For now, kill bullet just resets it's location
 	void killBullet(){
         Destroy(gameObject);
 	}
 
 	void OnTriggerEnter(Collider other){
-        if(other.gameObject.layer != 2){
+        if(other.gameObject.layer == Layers.Player){
             PlayerController pc = other.transform.GetComponent<PlayerController>();
             //If the bullet hit the player
             if (pc != null)
             {
                 //pc.TakeDamage();
             }
-            Debug.Log(other.gameObject.layer);
+        }
+        if (other.gameObject != from)
+        {
             killBullet();
         }
 	}

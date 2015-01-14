@@ -5,12 +5,12 @@ public class EnemyMovement : MonoBehaviour {
 	public GameObject target;
 	
 	//------John's Variables----------------------------------------------
-	float enemyPatrolRadius = Random.Range(20, 50);
+    float enemyPatrolRadius;
 	float enemyPatrolPoint = 0;
 	Vector3 enemyPatrolNext;
 	Vector3 enemyDirection;
 	Vector3 enemyInitialSpawn;
-	float enemySpeed = 0.05f;
+	float enemySpeed = 5f;
 	//--------------------------------------------------------------------
 	
 	//Raymond's Variables------------------------------------
@@ -31,6 +31,7 @@ public class EnemyMovement : MonoBehaviour {
 	//State aiState;
 	
 	void Start () {
+        enemyPatrolRadius = Random.Range(15, 25);
 		enemyInitialSpawn = transform.position;
 		enemyPatrolNext.Set (0, 0, 0);
 		enemyDirection.Set (0, 0, 0);
@@ -51,20 +52,20 @@ public class EnemyMovement : MonoBehaviour {
 		case stateEnemyAI.idle:	//idle state
 			if (idleTimer >= 2) {
 				EnemyAI = stateEnemyAI.patrol; //switch states
-				enemyPatrolNext.Set (enemyInitialSpawn.x + (Mathf.Pow (-1, Random.Range (1, 3))) * (Random.Range (5, enemyPatrolRadius)), 
-				                     enemyInitialSpawn.y + (Mathf.Pow (-1, Random.Range (1, 3))) * (Random.Range (5, enemyPatrolRadius)), 0);
+				enemyPatrolNext.Set (enemyInitialSpawn.x + (Mathf.Pow (-1, Random.Range (1, 3))) * (Random.Range (5, enemyPatrolRadius)),
+                                     0, enemyInitialSpawn.y + (Mathf.Pow(-1, Random.Range(1, 3))) * (Random.Range(5, enemyPatrolRadius)));
 				idleTimer = 0;
 			}
 			break;
 			
 		case stateEnemyAI.patrol:   //patrol
-			if (transform.position == enemyPatrolNext) {
+			if ((transform.position - enemyPatrolNext).sqrMagnitude < enemySpeed) {
 				EnemyAI = stateEnemyAI.idle; //switch states
 			} else {
 				//enemy movement action
 				enemyDirection = enemyPatrolNext - transform.position;
 				enemyDirection.Normalize ();
-				enemyDirection *= enemySpeed;
+				enemyDirection *= (enemySpeed * Time.deltaTime);
 				transform.position += enemyDirection;
 			}
 			break;

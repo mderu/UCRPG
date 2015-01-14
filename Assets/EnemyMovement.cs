@@ -11,6 +11,10 @@ public class EnemyMovement : MonoBehaviour {
 	Vector3 enemyDirection;
 	Vector3 enemyInitialSpawn;
 	float enemySpeed = 5f;
+	float enemyX = 0;
+	float enemyZ = 0;
+	public float enemyPatrolRadiusUpperBound = 10;
+	public float enemyPatrolRadiusLowerBound = 15;
 	//--------------------------------------------------------------------
 	
 	//Raymond's Variables------------------------------------
@@ -31,7 +35,7 @@ public class EnemyMovement : MonoBehaviour {
 	//State aiState;
 	
 	void Start () {
-        enemyPatrolRadius = Random.Range(15, 25);
+        enemyPatrolRadius = Random.Range(enemyPatrolRadiusLowerBound, enemyPatrolRadiusUpperBound);
 		enemyInitialSpawn = transform.position;
 		enemyPatrolNext.Set (0, 0, 0);
 		enemyDirection.Set (0, 0, 0);
@@ -47,21 +51,33 @@ public class EnemyMovement : MonoBehaviour {
 			
 		case stateEnemyAI.init:
 			EnemyAI = stateEnemyAI.idle;
+			Debug.Log ("Enemy Patrol Radius: " + enemyPatrolRadius);
+			Debug.Log ("Going to Idle.");
 			break;
 			
 		case stateEnemyAI.idle:	//idle state
-			if (idleTimer >= 2) {
+			if (idleTimer >= 2) {	//then calculate next patrol point and switch states
 				EnemyAI = stateEnemyAI.patrol; //switch states
-				enemyPatrolNext.Set (enemyInitialSpawn.x + (Mathf.Pow (-1, Random.Range (1, 3))) * (Random.Range (5, enemyPatrolRadius)),
-                                     0, enemyInitialSpawn.y + (Mathf.Pow(-1, Random.Range(1, 3))) * (Random.Range(5, enemyPatrolRadius)));
+				enemyX = enemyInitialSpawn.x + Random.insideUnitCircle.x * enemyPatrolRadius; 
+				enemyZ = enemyInitialSpawn.z + Random.insideUnitCircle.y * enemyPatrolRadius;
+				enemyPatrolNext.Set(enemyX, 0, enemyZ);
 				idleTimer = 0;
+				Debug.Log ("Going to Patrol.");
+			}
+			else
+			{
+				idleTimer += Time.deltaTime ; //update timer
 			}
 			break;
 			
 		case stateEnemyAI.patrol:   //patrol
-			if ((transform.position - enemyPatrolNext).sqrMagnitude < enemySpeed) {
+			if ((transform.position - enemyPatrolNext).sqrMagnitude < enemySpeed) 
+			{
 				EnemyAI = stateEnemyAI.idle; //switch states
-			} else {
+				Debug.Log ("Going to Idle.");
+			} 
+			else 
+			{
 				//enemy movement action
 				enemyDirection = enemyPatrolNext - transform.position;
 				enemyDirection.Normalize ();
@@ -87,7 +103,6 @@ public class EnemyMovement : MonoBehaviour {
 	void Update () {
 		
 		enemyAIStateMachine();
-		idleTimer += Time.deltaTime ; 
 		
 		//gets the distance between the position of the cube and the position fo the player
 		//Vector3 direction = target.transform.position - transform.position;

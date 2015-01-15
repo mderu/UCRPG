@@ -180,16 +180,16 @@ Material:
         second: 1.67142856
       data:
         first:
-          name: _InvFade
-        second: .628782988
-      data:
-        first:
           name: _HeightDisplacement
         second: 3.27225137
       data:
         first:
           name: _NormalsDisplacement
         second: 0
+      data:
+        first:
+          name: _InvFade
+        second: .628782988
       data:
         first:
           name: _Displacement
@@ -247,6 +247,14 @@ Material:
         first:
           name: _Color
         second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _Displacement
+        second: {r: 6.6371665, g: 20.3539829, b: -1, a: -.681415975}
+      data:
+        first:
+          name: _ShoreTiling
+        second: {r: 1, g: 1, b: .100000001, a: .100000001}
       data:
         first:
           name: _MainTex_ST
@@ -355,14 +363,6 @@ Material:
         first:
           name: _GDirectionCD
         second: {r: .70338881, g: -.679999888, b: .717573524, a: -.200000003}
-      data:
-        first:
-          name: _Displacement
-        second: {r: 6.6371665, g: 20.3539829, b: -1, a: -.681415975}
-      data:
-        first:
-          name: _ShoreTiling
-        second: {r: 1, g: 1, b: .100000001, a: .100000001}
       data:
         first:
           name: _DepthColor

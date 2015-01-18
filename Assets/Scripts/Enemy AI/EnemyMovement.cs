@@ -17,6 +17,7 @@ public class EnemyMovement : MonoBehaviour
 	public float enemyPatrolRadiusUpperBound = 10;
 	public float enemyPatrolRadiusLowerBound = 15;
 	public float enemyAggroRadius = 3;
+	public float enemyAttackRadius = 1;
 
 	//--------------------------------------------------------------------
 		
@@ -110,18 +111,44 @@ public class EnemyMovement : MonoBehaviour
                 if (!AIWithinRange(enemyPatrolRadius))
                     //if not in range then go back to idle
                     EnemyAI = stateEnemyAI.idlePause;
-                else
-                {
-                    //follow the player
-                    MoveTowards(target.transform.position);
-                }
-
+				else
+				{
+					if (AIWithinRange(enemyAttackRadius))
+				    {
+						// if in attack range, switch to attack state
+						EnemyAI = stateEnemyAI.attack;
+					}
+	                else
+	                {
+	                    //follow the player
+	                    MoveTowards(target.transform.position);
+	                }
+				}
                 break;
             }
             
 		    //==========Attack State==========
             case stateEnemyAI.attack://TODO: Finish attack state
             {
+				if (!AIWithinRange(enemyPatrolRadius))
+					//if not in range then go back to idle
+					EnemyAI = stateEnemyAI.idlePause;
+				else
+				{
+					if (!AIWithinRange(enemyAttackRadius))
+					{
+						Debug.Log(AIWithinRange(enemyAttackRadius));
+						Debug.Log("Back to aggro!");
+						EnemyAI = stateEnemyAI.agro; // A little lazy, probably potential problems later on.
+					}
+					else
+					{
+						Debug.Log("Attack State!");
+						Debug.Log(AIWithinRange(enemyAttackRadius));
+						// todo: implement attack animation, damage calc, etc. 
+						MoveTowards(target.transform.position); // Just to do something for now
+					}
+				}
                 break;
             }
 
@@ -152,13 +179,13 @@ public class EnemyMovement : MonoBehaviour
 	}
 	//=======================================================================================
 
-	bool PersonWithinRange(float Range) // Circle equatioooon!
+	bool PersonWithinRange(float Range) // Player within AI aggro range
 	{
 		return (Mathf.Pow((target.transform.position.x - transform.position.x), 2) +
 		        Mathf.Pow((target.transform.position.y - transform.position.y), 2)) <= Mathf.Pow(Range, 2);
 	}
 
-	bool AIWithinRange(float Range) // Circle equatioooon!
+	bool AIWithinRange(float Range) // AI within radius of AI range
 	{
 		return (Mathf.Pow((transform.position.x - enemyInitialSpawn.x), 2) +
 		        Mathf.Pow((transform.position.y - enemyInitialSpawn.y), 2)) <= Mathf.Pow(Range, 2);

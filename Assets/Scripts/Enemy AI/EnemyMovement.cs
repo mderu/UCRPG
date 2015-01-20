@@ -14,10 +14,11 @@ public class EnemyMovement : MonoBehaviour
 	float enemySpeed = 5f;
 	float enemyX = 0;
 	float enemyZ = 0;
-	public float enemyPatrolRadiusUpperBound = 10;
-	public float enemyPatrolRadiusLowerBound = 15;
-	public float enemyAggroRadius = 3;
+	public float enemyPatrolRadiusUpperBound = 15;
+	public float enemyPatrolRadiusLowerBound = 20;
+	public float enemyAggroRadius = 4;
 	public float enemyAttackRadius = 1;
+	public float enemyFieldOfVision = 130f; // Somewhat arbitrary, avg effictive human fov between 110~140
 
 	//--------------------------------------------------------------------
 		
@@ -58,8 +59,9 @@ public class EnemyMovement : MonoBehaviour
 		    //========Idle State===========
             case stateEnemyAI.idle:
             {
-                if (PersonWithinRange(enemyAggroRadius))
+                if (PersonWithinRange(enemyAggroRadius) && WithinAIVision())
                 {
+					Debug.Log("Player spotted in idle state!!!");
                     EnemyAI = stateEnemyAI.agro;
                 }
                 else
@@ -84,10 +86,10 @@ public class EnemyMovement : MonoBehaviour
 		    //=========Patrol State=========
             case stateEnemyAI.patrol:
             {
-                if (PersonWithinRange(enemyAggroRadius))
+				if (PersonWithinRange(enemyAggroRadius) && WithinAIVision())
                 {
+					Debug.Log("Player spotted in patrol state!!!");
                     EnemyAI = stateEnemyAI.agro;
-                    Debug.Log("Going to Agro");
                 }
                 else
                 {
@@ -190,6 +192,23 @@ public class EnemyMovement : MonoBehaviour
 		return (Mathf.Pow((transform.position.x - enemyInitialSpawn.x), 2) +
 		        Mathf.Pow((transform.position.y - enemyInitialSpawn.y), 2)) <= Mathf.Pow(Range, 2);
 	}
+
+	bool WithinAIVision() // Player within AI Field of Vision
+	{
+		Vector3 enemyDist = target.transform.position - transform.position; // Distance between player and AI
+		float posAngle = Vector3.Angle (enemyDist, transform.forward); // angle from forward view and player
+		
+		if (posAngle < (enemyFieldOfVision / 2.0f)) // if true, player potentially in range
+		{
+			RaycastHit pewpew;
+			if(Physics.Raycast(transform.position, enemyDist.normalized, out pewpew))
+				if( pewpew.collider.gameObject.layer == Layers.Player ) // get lucky!
+					return true;
+			return false;
+		}
+		return false; 
+	}
+
 
 	//==========================================================================================
 	//--------------------------------------UPDATE FUNCTION-------------------------------------

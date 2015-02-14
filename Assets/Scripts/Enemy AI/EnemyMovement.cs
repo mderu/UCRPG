@@ -36,7 +36,7 @@ public class EnemyMovement : MonoBehaviour
 
 	//----------------Variables and States-------------------
 	float idleTimer = 0;
-	public enum stateEnemyAI {init, patrol, idle, agro, attack, idlePause, returnToPost};
+	public enum stateEnemyAI {init, patrol, idle, aggro, attack, idlePause, returnToPost};
 	private stateEnemyAI EnemyAI = stateEnemyAI.init;
 	//-------------------------------------------------------
 
@@ -59,98 +59,28 @@ public class EnemyMovement : MonoBehaviour
 		    //========Idle State===========
             case stateEnemyAI.idle:
             {
-                if (PersonWithinRange(enemyAggroRadius) && WithinAIVision())
-                {
-					Debug.Log("Player spotted in idle state!!!");
-                    EnemyAI = stateEnemyAI.agro;
-                }
-                else
-                {
-                    if (idleTimer >= 1)
-                    {	//then calculate next patrol point and switch states
-                        EnemyAI = stateEnemyAI.patrol; //switch states
-                        enemyX = enemyInitialSpawn.x + Random.insideUnitCircle.x * enemyPatrolRadius;
-                        enemyZ = enemyInitialSpawn.z + Random.insideUnitCircle.y * enemyPatrolRadius;
-                        enemyPatrolNext.Set(enemyX, 0, enemyZ);
-                        idleTimer = 0;
-                        Debug.Log("Going to Patrol.");
-                    }
-                    else
-                    {
-                        idleTimer += Time.deltaTime; //update timer
-                    }
-                }
+				idleState();
                 break;
             }
             
 		    //=========Patrol State=========
             case stateEnemyAI.patrol:
             {
-				if (PersonWithinRange(enemyAggroRadius) && WithinAIVision())
-                {
-					Debug.Log("Player spotted in patrol state!!!");
-                    EnemyAI = stateEnemyAI.agro;
-                }
-                else
-                {
-                    if ((transform.position - enemyPatrolNext).sqrMagnitude < enemySpeed)
-                    {
-                        EnemyAI = stateEnemyAI.idle; //switch states
-                        Debug.Log("Going to Idle.");
-                    }
-                    else
-                    {
-                        //enemy movement action
-                        MoveTowards(enemyPatrolNext);
-                    }
-                }
+				patrolState();
                 break;
             }
             
-		    //=========Agro State==========
-            case stateEnemyAI.agro:
+		    //=========aggro State==========
+            case stateEnemyAI.aggro:
             {
-                if (!AIWithinRange(enemyPatrolRadius))
-                    //if not in range then go back to idle
-                    EnemyAI = stateEnemyAI.idlePause;
-				else
-				{
-					if (AIWithinRange(enemyAttackRadius))
-				    {
-						// if in attack range, switch to attack state
-						EnemyAI = stateEnemyAI.attack;
-					}
-	                else
-	                {
-	                    //follow the player
-	                    MoveTowards(target.transform.position);
-	                }
-				}
+				aggroState();
                 break;
             }
             
 		    //==========Attack State==========
             case stateEnemyAI.attack://TODO: Finish attack state
             {
-				if (!AIWithinRange(enemyPatrolRadius))
-					//if not in range then go back to idle
-					EnemyAI = stateEnemyAI.idlePause;
-				else
-				{
-					if (!AIWithinRange(enemyAttackRadius))
-					{
-						Debug.Log(AIWithinRange(enemyAttackRadius));
-						Debug.Log("Back to aggro!");
-						EnemyAI = stateEnemyAI.agro; // A little lazy, probably potential problems later on.
-					}
-					else
-					{
-						Debug.Log("Attack State!");
-						Debug.Log(AIWithinRange(enemyAttackRadius));
-						// todo: implement attack animation, damage calc, etc. 
-						MoveTowards(target.transform.position); // Just to do something for now
-					}
-				}
+				attackState();
                 break;
             }
 
@@ -179,7 +109,8 @@ public class EnemyMovement : MonoBehaviour
 			    break;	
 		}
 	}
-	//=======================================================================================
+
+	//===========================================~~~ Lazy Inheritance Classes ~~~===========================================//
 
 	bool PersonWithinRange(float Range) // Player within AI aggro range
 	{
@@ -209,7 +140,84 @@ public class EnemyMovement : MonoBehaviour
 		return false; 
 	}
 
+	void idleState()
+	{
+		if (PersonWithinRange(enemyAggroRadius) && WithinAIVision())
+		{
+			Debug.Log("Player spotted in idle state!!!");
+			EnemyAI = stateEnemyAI.aggro;
+		}
+		else
+		{
+			if (idleTimer >= 1)
+			{	//then calculate next patrol point and switch states
+				EnemyAI = stateEnemyAI.patrol; //switch states
+				enemyX = enemyInitialSpawn.x + Random.insideUnitCircle.x * enemyPatrolRadius;
+				enemyZ = enemyInitialSpawn.z + Random.insideUnitCircle.y * enemyPatrolRadius;
+				enemyPatrolNext.Set(enemyX, 0, enemyZ);
+				idleTimer = 0;
+				Debug.Log("Going to Patrol.");
+			}
+			else
+			{
+				idleTimer += Time.deltaTime; //update timer
+			}
+		}
+	}
 
+	void attackState()
+	{
+		if (!AIWithinRange(enemyPatrolRadius))
+			//if not in range then go back to idle
+			EnemyAI = stateEnemyAI.idlePause;
+
+		Debug.Log(AIWithinRange(enemyAttackRadius));
+		Debug.Log("Back to aggro!");
+		MoveTowards(target.transform.position); 
+		EnemyAI = stateEnemyAI.aggro; // A little lazy, probably potential problems later on.
+	}
+
+	void aggroState()
+	{
+		if (!AIWithinRange(enemyPatrolRadius))
+			//if not in range then go back to idle
+			EnemyAI = stateEnemyAI.idlePause;
+		else
+		{
+			if (AIWithinRange(enemyAttackRadius))
+			{
+				// if in attack range, switch to attack state
+				EnemyAI = stateEnemyAI.attack;
+			}
+			else
+			{
+				//follow the player
+				MoveTowards(target.transform.position);
+			}
+		}
+	}
+
+	void patrolState()
+	{
+		if (PersonWithinRange(enemyAggroRadius) && WithinAIVision())
+		{
+			Debug.Log("Player spotted in patrol state!!!");
+			EnemyAI = stateEnemyAI.aggro;
+		}
+		else
+		{
+			if ((transform.position - enemyPatrolNext).sqrMagnitude < enemySpeed)
+			{
+				EnemyAI = stateEnemyAI.idle; //switch states
+				Debug.Log("Going to Idle.");
+			}
+			else
+			{
+				//enemy movement action
+				MoveTowards(enemyPatrolNext);
+			}
+		}
+	}
 	//==========================================================================================
 	//--------------------------------------UPDATE FUNCTION-------------------------------------
 	//==========================================================================================
@@ -222,11 +230,13 @@ public class EnemyMovement : MonoBehaviour
     void MoveTowards(Vector3 destination)
     {
         transform.GetComponent<NavMeshAgent>().SetDestination(destination);
-        /*enemyDirection = destination - transform.position;
-        enemyDirection.Normalize();
-        enemyDirection *= enemySpeed;
-        rigidbody.velocity = new Vector3(enemyDirection.x, rigidbody.velocity.y, enemyDirection.z);
-        */
     }
+
+	void MoveAway() // #YOLO
+	{
+		// Creates a vector that is in the opposite direction of the player
+		Vector3 newPos = (transform.position - target.transform.position).normalized * enemyPatrolRadius + target.transform.position;
+		transform.GetComponent<NavMeshAgent>().SetDestination (newPos);
+	}
 }
 

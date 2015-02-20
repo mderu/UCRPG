@@ -5,7 +5,7 @@ public class Gear : MonoBehaviour {
 
 	public float strength = 0f;
 
-	public float rotSpeed = 0f;
+	public float rotSpeed = 180f;
 	public float numTeeth = 8;
 	private bool decay = true;
 	private const float decayRate = .99f;
@@ -19,8 +19,8 @@ public class Gear : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		transform.rotation = transform.rotation * Quaternion.Euler (0, 0, rotSpeed);
-        if (decay) { rotSpeed *= decayRate; strength *= .99f; if (Mathf.Abs(rotSpeed) < .001) { rotSpeed = 0; strength = 0; } }
+		transform.rotation = transform.rotation * Quaternion.Euler (0, 0, rotSpeed * Time.deltaTime);
+        if (decay) { rotSpeed *= decayRate * Time.deltaTime; strength *= .99f; if (Mathf.Abs(rotSpeed) < .001) { rotSpeed = 0; strength = 0; } }
 	}
 	void OnTriggerExit(Collider other){
 		Gear gear = other.GetComponent<Gear> ();

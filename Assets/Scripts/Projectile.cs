@@ -98,7 +98,10 @@ public class Projectile : MonoBehaviour {
 	}
 
 	void killBullet(){
+        transform.GetChild(0).parent = null;
+        transform.GetChild(1).parent = null;
         Destroy(gameObject);
+        //transform.position = from.transform.position;
 	}
 
 	void OnTriggerEnter(Collider other){

@@ -4,11 +4,20 @@ using System.Collections;
 public class RangedMovement : EnemyMovement {
 
 	// AI states~!
-	public enum stateEnemyAI { init, patrol, idle, aggro, attack, kite, idlePause, returnToPost };
+	protected enum stateEnemyAI { init, patrol, idle, aggro, attack, kite, idlePause, returnToPost };
+	protected stateEnemyAI EnemyAI = stateEnemyAI.init;
 	public float attackRange = 15;
 
-	public float enemyMinAttackRange = 5;
-	public float enemyMaxAttackRange = 10;
+	public float minAttackRange = 5;
+	public float maxAttackRange = 10;
+
+	void Start () 
+	{
+		enemyPatrolRadius = Random.Range(enemyPatrolRadiusLowerBound, enemyPatrolRadiusUpperBound);
+		enemyInitialSpawn = transform.position;
+		enemyPatrolNext.Set (0, 0, 0);
+		enemyDirection.Set (0, 0, 0);
+	}
 
 	void enemyAIStateMachine()
 	{
@@ -40,14 +49,28 @@ public class RangedMovement : EnemyMovement {
 				break;
 			}
 
-			case stateEnemyAI.attack:
+			case stateEnemyAI.attack:		// kites away from player and tries to attack
 			{
 				attackState();
 				break;
 			}
-			case stateEnemyAI.kite:{}
-			case stateEnemyAI.idlePause:{}
-			case stateEnemyAI.returnToPost:{}
+			case stateEnemyAI.idlePause:
+			{
+				if (idleTimer >= 2)
+				{
+					EnemyAI = stateEnemyAI.idle;
+					idleTimer = 0;
+				}
+				else
+				{
+					idleTimer += Time.deltaTime; //update timer
+				}
+				break;
+			}
+			case stateEnemyAI.returnToPost:
+			{
+				break;
+			}
 
 			default:
 				break;
@@ -62,24 +85,25 @@ public class RangedMovement : EnemyMovement {
 
 	void aggroState()
 	{
-
+		Debug.Log ("Aggro State");
 		if (!AIWithinRange(enemyPatrolRadius))
 			//if not in range then go back to idle
 			EnemyAI = stateEnemyAI.idlePause;
 		else
 		{
-			if (!AIWithinRange(enemyMaxAttackRange))			// Enemy too far away to attack, move closer
+			if (!AIWithinRange(maxAttackRange))			// Enemy too far away to attack, move closer
 			{
 				Debug.Log ("Moving Closer");
 				MoveTowards(target.transform.position);
 			}
-			else if (AIWithinRange(enemyMinAttackRadius))		// Enemy is close enough to attack
+			else if (AIWithinRange(minAttackRange))		// Enemy is close enough to attack
 			{
 				// if in attack range, switch to attack state
 				EnemyAI = stateEnemyAI.attack;
 			}
-			else if (PersonWIthinRange( enemyMinAttackRange ))	// Player too close!
+			else if (PersonWithinRange( minAttackRange ))	// Player too close!
 			{
+				Debug.Log ("Moving Farther");
 				MoveAway();
 			}
 		}
@@ -87,15 +111,15 @@ public class RangedMovement : EnemyMovement {
 
 	void attackState()
 	{
-
+		Debug.Log ("Attack State");
 		if (!AIWithinRange(enemyPatrolRadius))
 			//if not in range then go back to idle
 			EnemyAI = stateEnemyAI.idlePause;
 		else
 		{
-			if (PersonWIthinRange( enemyMinAttackRange ))	// Player too close! Fly you fools! ...actually, the if else might need to swap
+			if (PersonWithinRange( minAttackRange ))	// Player too close! Fly you fools! ...actually, the if else might need to swap
 			{
-				Debug.Log(AIWIthinRange( enemyMinAttackRange ));
+				Debug.Log(AIWithinRange( minAttackRange ));
 				Debug.Log ("Attack going to Aggro!");
 				// fancy math in hurrrrr
 				EnemyAI = stateEnemyAI.aggro;
@@ -108,7 +132,7 @@ public class RangedMovement : EnemyMovement {
 				// more math, more fun!. 
 				//MoveAway(); // Just to do something for now
 				idleTimer = 0;
-				while(idleTimer <= 3)
+				while(idleTimer <= 2)
 				{
 					Debug.Log ("Pretend I'm totally attacking /s");
 					idleTimer++;
@@ -118,7 +142,6 @@ public class RangedMovement : EnemyMovement {
 		}
 
 	}
-
 
 	//==========================================================================================
 	//--------------------------------------UPDATE FUNCTION-------------------------------------

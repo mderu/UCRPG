@@ -3,14 +3,15 @@ using System.Collections;
 
 public class EnemyMovement : MonoBehaviour 
 {
+
 	public GameObject target;
 	
 	//------John's Variables----------------------------------------------
-    float enemyPatrolRadius;
-	float enemyPatrolPoint = 0;
-	Vector3 enemyPatrolNext;
-	Vector3 enemyDirection;
-	Vector3 enemyInitialSpawn;
+	public float enemyPatrolRadius;
+	protected float enemyPatrolPoint = 0;
+	protected Vector3 enemyPatrolNext;
+	protected Vector3 enemyDirection;
+	protected Vector3 enemyInitialSpawn;
 	float enemySpeed = 5f;
 	float enemyX = 0;
 	float enemyZ = 0;
@@ -35,9 +36,9 @@ public class EnemyMovement : MonoBehaviour
 	//========================================================================
 
 	//----------------Variables and States-------------------
-	float idleTimer = 0;
-	public enum stateEnemyAI {init, patrol, idle, aggro, attack, idlePause, returnToPost};
-	private stateEnemyAI EnemyAI = stateEnemyAI.init;
+	public float idleTimer = 0;
+	protected enum stateEnemyAI {init, patrol, idle, aggro, attack, idlePause, returnToPost};
+	protected stateEnemyAI EnemyAI = stateEnemyAI.init;
 	//-------------------------------------------------------
 
 	//=================-------State Machine------===================
@@ -111,20 +112,19 @@ public class EnemyMovement : MonoBehaviour
 	}
 
 	//===========================================~~~ Lazy Inheritance Classes ~~~===========================================//
-
-	bool PersonWithinRange(float Range) // Player within AI aggro range
+	public virtual bool PersonWithinRange(float Range) // Player within AI aggro range
 	{
 		return (Mathf.Pow((target.transform.position.x - transform.position.x), 2) +
 		        Mathf.Pow((target.transform.position.y - transform.position.y), 2)) <= Mathf.Pow(Range, 2);
 	}
 
-	bool AIWithinRange(float Range) // AI within radius of AI range
+	public virtual bool AIWithinRange(float Range) // AI within radius of AI range
 	{
 		return (Mathf.Pow((transform.position.x - enemyInitialSpawn.x), 2) +
 		        Mathf.Pow((transform.position.y - enemyInitialSpawn.y), 2)) <= Mathf.Pow(Range, 2);
 	}
 
-	bool WithinAIVision() // Player within AI Field of Vision
+	public virtual bool WithinAIVision() // Player within AI Field of Vision
 	{
 		Vector3 enemyDist = target.transform.position - transform.position; // Distance between player and AI
 		float posAngle = Vector3.Angle (enemyDist, transform.forward); // angle from forward view and player
@@ -140,7 +140,7 @@ public class EnemyMovement : MonoBehaviour
 		return false; 
 	}
 
-	void idleState()
+	protected virtual void idleState()
 	{
 		if (PersonWithinRange(enemyAggroRadius) && WithinAIVision())
 		{
@@ -165,7 +165,7 @@ public class EnemyMovement : MonoBehaviour
 		}
 	}
 
-	void attackState()
+	protected virtual void attackState()
 	{
 		if (!AIWithinRange(enemyPatrolRadius))
 			//if not in range then go back to idle
@@ -177,7 +177,7 @@ public class EnemyMovement : MonoBehaviour
 		EnemyAI = stateEnemyAI.aggro; // A little lazy, probably potential problems later on.
 	}
 
-	void aggroState()
+	protected virtual void aggroState()
 	{
 		if (!AIWithinRange(enemyPatrolRadius))
 			//if not in range then go back to idle
@@ -197,7 +197,7 @@ public class EnemyMovement : MonoBehaviour
 		}
 	}
 
-	void patrolState()
+	protected virtual void patrolState()
 	{
 		if (PersonWithinRange(enemyAggroRadius) && WithinAIVision())
 		{
@@ -222,17 +222,17 @@ public class EnemyMovement : MonoBehaviour
 	//--------------------------------------UPDATE FUNCTION-------------------------------------
 	//==========================================================================================
 	// Update is called once per frame
-	void Update () 
+	protected virtual void Update () 
     {
 		enemyAIStateMachine();
 	}
 
-    void MoveTowards(Vector3 destination)
+	public virtual void MoveTowards(Vector3 destination)
     {
         transform.GetComponent<NavMeshAgent>().SetDestination(destination);
     }
 
-	void MoveAway() // #YOLO
+	public virtual void MoveAway() // #YOLO
 	{
 		// Creates a vector that is in the opposite direction of the player
 		Vector3 newPos = (transform.position - target.transform.position).normalized * enemyPatrolRadius + target.transform.position;

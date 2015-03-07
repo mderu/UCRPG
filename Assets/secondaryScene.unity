@@ -1107,7 +1107,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 129554627}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -47.8110161, y: 18.4152946, z: -76.1531906}
+  m_LocalPosition: {x: -58.2435074, y: 18.4152946, z: -87.9376678}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2048668318}
@@ -6746,10 +6746,13 @@ GameObject:
   m_Component:
   - 4: {fileID: 996656717}
   - 33: {fileID: 996656716}
-  - 65: {fileID: 996656715}
   - 23: {fileID: 996656714}
   - 114: {fileID: 996656718}
   - 111: {fileID: 996656719}
+  - 54: {fileID: 996656721}
+  - 195: {fileID: 996656720}
+  - 114: {fileID: 996656722}
+  - 65: {fileID: 996656715}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -6803,7 +6806,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 996656713}
   m_LocalRotation: {x: 0, y: -.613313317, z: 0, w: .789839745}
-  m_LocalPosition: {x: 36.8800011, y: .519999981, z: 70.7099991}
+  m_LocalPosition: {x: 30, y: .519999981, z: 40}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -6814,7 +6817,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 996656713}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: acf9bad891fc0d14987fa6da2f0f628d, type: 3}
   m_Name: 
@@ -6842,6 +6845,63 @@ Animation:
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!195 &996656720
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 996656713}
+  m_Enabled: 1
+  m_Radius: .5
+  m_Speed: 3.70000005
+  m_Acceleration: 9.19999981
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1
+  m_BaseOffset: .5
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!54 &996656721
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 996656713}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: .0500000007
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
+--- !u!114 &996656722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 996656713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 219423917c5bae64c9ab55212d5076d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 100020, guid: 05c98027197f10d48b41ecd91f0e49f3, type: 2}
+  enemyPatrolRadius: 0
+  enemyPatrolRadiusUpperBound: 15
+  enemyPatrolRadiusLowerBound: 20
+  enemyAggroRadius: 4
+  enemyAttackRadius: 1
+  enemyFieldOfVision: 130
+  idleTimer: 0
+  attackRange: 15
+  minAttackRange: 5
+  maxAttackRange: 10
 --- !u!1001 &1008061201
 Prefab:
   m_ObjectHideFlags: 0
@@ -9331,7 +9391,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!54 &1571419679
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9410,11 +9470,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 854051280}
+  enemyPatrolRadius: 0
   enemyPatrolRadiusUpperBound: 10
   enemyPatrolRadiusLowerBound: 15
   enemyAggroRadius: 3
   enemyAttackRadius: 1
   enemyFieldOfVision: 130
+  idleTimer: 0
 --- !u!195 &1571419685
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -11611,7 +11673,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &1928315948
 Renderer:
   m_ObjectHideFlags: 0
@@ -11676,11 +11738,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 854051280}
+  enemyPatrolRadius: 0
   enemyPatrolRadiusUpperBound: 10
   enemyPatrolRadiusLowerBound: 15
   enemyAggroRadius: 3
   enemyAttackRadius: 1
   enemyFieldOfVision: 130
+  idleTimer: 0
 --- !u!54 &1928315953
 Rigidbody:
   m_ObjectHideFlags: 0
